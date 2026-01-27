@@ -1,0 +1,38 @@
+{
+  "common": {
+    "appName": "دورا كير",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "fullName": "الاسم الكامل",
+    "phoneNumber": "رقم الهاتف",
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ ما",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "actions": "إجراءات"
+  },
+  "auth": {
+    "welcomeBack": "مرحباً بعودتك",
+    "signInToAccount": "تسجيل الدخول إلى حسابك",
+    "noAccount": "ليس لديك حساب؟",
+    "haveAccount": "لديك حساب بالفعل؟",
+    "registerModerator": "التسجيل كمشرف",
+    "createAccount": "أنشئ حسابك"
+  },
+  "dashboard": {
+    "title": "لوحة تحكم المشرف",
+    "myGroups": "مجموعاتي",
+    "createGroup": "إنشاء مجموعة",
+    "pilgrims": "الحجاج",
+    "bands": "الأساور الذكية",
+    "liveTracking": "التتبع المباشر",
+    "sendAlert": "إرسال تنبيه",
+    "groupName": "اسم المجموعة",
+    "addPilgrim": "إضافة حاج",
+    "assignBand": "ربط سوار"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "common": {
+    "appName": "Dora Care",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email Address",
+    "password": "Password",
+    "fullName": "Full Name",
+    "phoneNumber": "Phone Number",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "actions": "Actions"
+  },
+  "auth": {
+    "welcomeBack": "Welcome Back",
+    "signInToAccount": "Sign in to your account",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "registerModerator": "Register as Moderator",
+    "createAccount": "Create your account"
+  },
+  "dashboard": {
+    "title": "Moderator Dashboard",
+    "myGroups": "My Groups",
+    "createGroup": "Create Group",
+    "pilgrims": "Pilgrims",
+    "bands": "Hardware Bands",
+    "liveTracking": "Live Tracking",
+    "sendAlert": "Send Alert",
+    "groupName": "Group Name",
+    "addPilgrim": "Add Pilgrim",
+    "assignBand": "Assign Band"
+  }
+}

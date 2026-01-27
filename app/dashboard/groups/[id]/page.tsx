@@ -1,0 +1,346 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { 
+  ChevronLeft, 
+  Plus, 
+  Watch, 
+  UserPlus, 
+  Map as MapIcon, 
+  Search,
+  Loader2,
+  Trash2,
+  Bell
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { useLanguage } from '@/lib/LanguageContext';
+import apiClient from '@/lib/api';
+import { DashboardNavbar } from '@/components/layout/DashboardNavbar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+export default function GroupDetailsPage() {
+  const { id } = useParams();
+  const { t, language, dir } = useLanguage();
+  const router = useRouter();
+  const [group, setGroup] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Pilgrim Registration State
+  const [isRegDialogOpen, setIsRegDialogOpen] = useState(false);
+  const [newPilgrim, setNewPilgrim] = useState({
+    full_name: '',
+    national_id: '',
+    medical_history: '',
+    email: ''
+  });
+  const [registering, setRegistering] = useState(false);
+
+  // Band Assignment State
+  const [isBandDialogOpen, setIsBandDialogOpen] = useState(false);
+  const [selectedPilgrimId, setSelectedPilgrimId] = useState('');
+  const [serialNumber, setSerialNumber] = useState('');
+  const [assigning, setAssigning] = useState(false);
+
+  const fetchGroupDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/groups/dashboard');
+      if (response.data.groups) {
+        const currentGroup = response.data.groups.find((g: any) => g._id === id);
+        if (currentGroup) {
+          setGroup(currentGroup);
+        } else {
+          toast.error(language === 'ar' ? 'المجموعة غير موجودة' : 'Group not found');
+          router.push('/dashboard');
+        }
+      }
+    } catch (error: any) {
+      toast.error(t('common.error'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGroupDetails();
+  }, [id]);
+
+  const handleRegisterPilgrim = async () => {
+    try {
+      setRegistering(true);
+      const res = await apiClient.post('/auth/register-pilgrim', newPilgrim);
+      const pilgrimId = res.data.pilgrim_id;
+      
+      // After registering, add to group
+      await apiClient.post(`/groups/${id}/add-pilgrim`, { user_id: pilgrimId });
+      
+      toast.success(language === 'ar' ? 'تمت إضافة الحاج بنجاح' : 'Pilgrim added successfully');
+      setIsRegDialogOpen(false);
+      setNewPilgrim({ full_name: '', national_id: '', medical_history: '', email: '' });
+      fetchGroupDetails();
+    } catch (error: any) {
+      toast.error(error.response?.data?.errors?.[0] || error.response?.data?.error || t('common.error'));
+    } finally {
+      setRegistering(false);
+    }
+  };
+
+  const handleAssignBand = async () => {
+    try {
+      setAssigning(true);
+      await apiClient.post('/groups/assign-band', {
+        serial_number: serialNumber,
+        user_id: selectedPilgrimId
+      });
+      
+      toast.success(language === 'ar' ? 'تم ربط السوار بنجاح' : 'Band assigned successfully');
+      setIsBandDialogOpen(false);
+      setSerialNumber('');
+      fetchGroupDetails();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || t('common.error'));
+    } finally {
+      setAssigning(false);
+    }
+  };
+
+  if (loading && !group) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <DashboardNavbar />
+        <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <DashboardNavbar />
+      
+      <main className="container mx-auto p-4 py-8">
+        <Button 
+          variant="ghost" 
+          onClick={() => router.push('/dashboard')} 
+          className="mb-4 gap-2"
+        >
+          <ChevronLeft className={`w-4 h-4 ${dir === 'rtl' ? 'rotate-180' : ''}`} />
+          {language === 'ar' ? 'العودة للمجموعات' : 'Back to Groups'}
+        </Button>
+
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex-1 space-y-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold text-slate-900">{group?.group_name}</h1>
+                <p className="text-muted-foreground">
+                  {group?.pilgrims.length} {t('dashboard.pilgrims')} {language === 'ar' ? 'مسجلين' : 'registered'}
+                </p>
+              </div>
+              
+              <Dialog open={isRegDialogOpen} onOpenChange={setIsRegDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2">
+                    <UserPlus className="w-4 h-4" />
+                    {t('dashboard.addPilgrim')}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>{t('dashboard.addPilgrim')}</DialogTitle>
+                    <DialogDescription>
+                      {language === 'ar' ? 'أدخل بيانات الحاج الجديد' : 'Enter the details of the new pilgrim'}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="full_name">{t('common.fullName')}</Label>
+                      <Input 
+                        id="full_name" 
+                        value={newPilgrim.full_name}
+                        onChange={e => setNewPilgrim({...newPilgrim, full_name: e.target.value})}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="national_id">{language === 'ar' ? 'رقم الهوية' : 'National ID'}</Label>
+                      <Input 
+                        id="national_id" 
+                        value={newPilgrim.national_id}
+                        onChange={e => setNewPilgrim({...newPilgrim, national_id: e.target.value})}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="medical">{language === 'ar' ? 'التاريخ الطبي' : 'Medical History'}</Label>
+                      <Input 
+                        id="medical" 
+                        value={newPilgrim.medical_history}
+                        onChange={e => setNewPilgrim({...newPilgrim, medical_history: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleRegisterPilgrim} disabled={registering}>
+                      {registering ? <Loader2 className="w-4 h-4 animate-spin" /> : t('common.save')}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <Card>
+              <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                <CardTitle className="text-lg font-semibold">{t('dashboard.pilgrims')}</CardTitle>
+                <div className="relative w-full max-w-xs">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input placeholder={language === 'ar' ? 'بحث...' : 'Search...'} className="pl-8" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('common.fullName')}</TableHead>
+                      <TableHead>{language === 'ar' ? 'رقم الهوية' : 'National ID'}</TableHead>
+                      <TableHead>{language === 'ar' ? 'السوار' : 'Band'}</TableHead>
+                      <TableHead className="text-right">{t('common.actions')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {group?.pilgrims.map((pilgrim: any) => (
+                      <TableRow key={pilgrim._id}>
+                        <TableCell className="font-medium">{pilgrim.full_name}</TableCell>
+                        <TableCell>{pilgrim.national_id}</TableCell>
+                        <TableCell>
+                          {pilgrim.band_info ? (
+                            <Badge variant="success" className="bg-green-100 text-green-700 hover:bg-green-100">
+                              {pilgrim.band_info.serial_number}
+                            </Badge>
+                          ) : (
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="h-7 text-xs gap-1"
+                              onClick={() => {
+                                setSelectedPilgrimId(pilgrim._id);
+                                setIsBandDialogOpen(true);
+                              }}
+                            >
+                              <Watch className="w-3 h-3" />
+                              {t('dashboard.assignBand')}
+                            </Button>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600">
+                              <Bell className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="w-full lg:w-96 space-y-6">
+            <Card className="overflow-hidden">
+              <CardHeader className="bg-slate-900 text-white">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <MapIcon className="w-5 h-5 text-primary" />
+                  {t('dashboard.liveTracking')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="h-80 bg-slate-200 flex flex-col items-center justify-center text-slate-500 relative">
+                  <MapIcon className="w-12 h-12 mb-2 opacity-20" />
+                  <p className="text-sm font-medium">Interactive Map Integration</p>
+                  <p className="text-xs opacity-60 px-8 text-center mt-2">
+                    {language === 'ar' 
+                      ? 'يتم عرض مواقع الحجاج المباشرة هنا عند ربط الأساور' 
+                      : 'Live pilgrim locations will appear here once bands are assigned'}
+                  </p>
+                  
+                  {/* Real map would go here */}
+                  <div className="absolute inset-0 bg-blue-500/5 backdrop-blur-[2px] pointer-events-none" />
+                </div>
+                <div className="p-4 bg-white border-t">
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold">{language === 'ar' ? 'إحصائيات المواقع' : 'Location Stats'}</h4>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">{language === 'ar' ? 'متصل' : 'Connected'}</span>
+                      <span className="font-bold text-green-600">
+                        {group?.pilgrims.filter((p: any) => p.band_info?.last_location).length}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">{language === 'ar' ? 'غير متصل' : 'Offline'}</span>
+                      <span className="font-bold text-slate-400">
+                        {group?.pilgrims.length - group?.pilgrims.filter((p: any) => p.band_info?.last_location).length}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </main>
+
+      {/* Assign Band Dialog */}
+      <Dialog open={isBandDialogOpen} onOpenChange={setIsBandDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('dashboard.assignBand')}</DialogTitle>
+            <DialogDescription>
+              {language === 'ar' ? 'أدخل الرقم التسلسلي للسوار' : 'Enter the serial number of the band'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="serial">{language === 'ar' ? 'رقم السوار (Serial)' : 'Band Serial Number'}</Label>
+            <Input 
+              id="serial" 
+              placeholder="e.g. BAND-001" 
+              value={serialNumber}
+              onChange={e => setSerialNumber(e.target.value)}
+              className="mt-2"
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handleAssignBand} disabled={assigning}>
+              {assigning ? <Loader2 className="w-4 h-4 animate-spin" /> : t('dashboard.assignBand')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
