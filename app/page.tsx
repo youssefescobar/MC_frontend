@@ -228,7 +228,7 @@ export default function LandingPage() {
           </div>
           
           <div className="pt-8 border-t flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-slate-500">
-            <p>© {new Date().getFullYear()} {t('landing.footer.copyright', { year: new Date().getFullYear() })}</p>
+            <p>© {new Date().getFullYear()} {t('landing.footer.copyright')}</p>
             <div className="flex gap-6">
               <Link href="#" className="hover:text-slate-900">{t('landing.footer.termsLink')}</Link>
               <Link href="#" className="hover:text-slate-900">{t('landing.footer.privacyLink')}</Link>
