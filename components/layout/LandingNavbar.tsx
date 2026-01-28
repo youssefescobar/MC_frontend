@@ -34,29 +34,28 @@ export function LandingNavbar() {
         </Link>
 
         <div className="flex items-center gap-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-2 hidden sm:flex">
-                <Languages className="w-4 h-4" />
-                {language === 'en' ? 'English' : 'العربية'}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setLanguage('en')}>
-                English
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setLanguage('ar')}>
-                العربية
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           <div className="flex items-center gap-2">
             <Link href="/auth">
               <Button variant="ghost" className="hidden sm:flex">
                 {t('common.login')}
               </Button>
             </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2 flex">
+                  <Languages className="w-4 h-4" />
+                  {language === 'en' ? 'English' : 'العربية'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setLanguage('en')}>
+                  English
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage('ar')}>
+                  العربية
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Link href="/auth">
               <Button className="gap-2">
                 {t('common.register')}
