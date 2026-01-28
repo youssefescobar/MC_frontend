@@ -80,6 +80,8 @@
     "heroSubtitle": "Ensure the safety of your pilgrims with real-time tracking, health monitoring, and instant alerts. The complete solution for modern Hajj operators.",
     "getStarted": "Get Started Now",
     "learnMore": "Learn More",
+    "featuresSectionTitle": "Everything you need to manage your group",
+    "featuresSectionSubtitle": "Powerful features designed specifically for the unique challenges of Hajj and Umrah management.",
     "features": {
       "tracking": "Live GPS Tracking",
       "trackingDesc": "Monitor the real-time location of every pilgrim in your group on an interactive map.",
@@ -88,7 +90,11 @@
       "alerts": "Smart Alerts",
       "alertsDesc": "Send instant notifications to individuals or the entire group with a single click.",
       "hardware": "IoT Wristband Integration",
-      "hardwareDesc": "Seamlessly connect with Dora smart bands for automated data collection."
+      "hardwareDesc": "Seamlessly connect with Dora smart bands for automated data collection.",
+      "groupManagement": "Group Management",
+      "groupManagementDesc": "Easily organize pilgrims into sub-groups and assign moderators for better supervision.",
+      "dataSecurity": "Data Security",
+      "dataSecurityDesc": "Enterprise-grade encryption ensures sensitive pilgrim data remains private and secure."
     }
   }
 }

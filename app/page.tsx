@@ -108,10 +108,10 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl mb-4">
-              Everything you need to manage your group
+              {t('landing.featuresSectionTitle')}
             </h2>
             <p className="text-lg text-slate-600">
-              Powerful features designed specifically for the unique challenges of Hajj and Umrah management.
+              {t('landing.featuresSectionSubtitle')}
             </p>
           </div>
 
@@ -138,13 +138,13 @@ export default function LandingPage() {
             />
             <FeatureCard 
               icon={Users} 
-              title="Group Management" 
-              description="Easily organize pilgrims into sub-groups and assign moderators for better supervision." 
+              title={t('landing.features.groupManagement')} 
+              description={t('landing.features.groupManagementDesc')} 
             />
             <FeatureCard 
               icon={ShieldCheck} 
-              title="Data Security" 
-              description="Enterprise-grade encryption ensures sensitive pilgrim data remains private and secure." 
+              title={t('landing.features.dataSecurity')} 
+              description={t('landing.features.dataSecurityDesc')} 
             />
           </div>
         </div>
