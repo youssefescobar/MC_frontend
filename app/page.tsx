@@ -41,7 +41,7 @@ export default function LandingPage() {
           <div className="text-center max-w-3xl mx-auto space-y-8">
             <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium text-primary bg-primary/5">
               <span className="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
-              v1.0 Now Available
+              {t('landing.v1Available')}
             </div>
             
             <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
@@ -89,10 +89,10 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { label: 'Pilgrims Secured', value: '10k+' },
-              { label: 'Active Groups', value: '500+' },
-              { label: 'Uptime', value: '99.9%' },
-              { label: 'Countries', value: '12+' },
+              { label: t('landing.stats.pilgrimsSecured'), value: '10k+' },
+              { label: t('landing.stats.activeGroups'), value: '500+' },
+              { label: t('landing.stats.uptime'), value: '99.9%' },
+              { label: t('landing.stats.countries'), value: '12+' },
             ].map((stat, i) => (
               <div key={i} className="space-y-2">
                 <div className="text-3xl font-bold text-slate-900">{stat.value}</div>
@@ -158,10 +158,10 @@ export default function LandingPage() {
         
         <div className="container mx-auto px-4 relative z-10 text-center">
           <h2 className="text-3xl font-bold sm:text-4xl mb-6">
-            Ready to transform your Hajj operations?
+            {t('landing.cta.title')}
           </h2>
           <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-            Join hundreds of operators who trust Dora Care for their pilgrim safety and management needs.
+            {t('landing.cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/auth">
@@ -171,7 +171,7 @@ export default function LandingPage() {
             </Link>
             <Link href="/auth">
               <Button size="lg" variant="ghost" className="h-14 px-8 text-lg w-full sm:w-auto border-slate-700 hover:bg-slate-800 text-white hover:text-white">
-                Contact Sales
+                {t('landing.cta.contactSales')}
               </Button>
             </Link>
           </div>
@@ -195,44 +195,44 @@ export default function LandingPage() {
                 <span className="font-bold text-lg text-slate-900">Dora Care</span>
               </div>
               <p className="text-sm text-slate-500">
-                Advanced safety solutions for Hajj & Umrah operators.
+                {t('landing.footer.tagline')}
               </p>
             </div>
             
             <div>
-              <h4 className="font-semibold text-slate-900 mb-4">Product</h4>
+              <h4 className="font-semibold text-slate-900 mb-4">{t('landing.footer.product')}</h4>
               <ul className="space-y-2 text-sm text-slate-600">
-                <li><Link href="#" className="hover:text-primary">Features</Link></li>
-                <li><Link href="#" className="hover:text-primary">Hardware</Link></li>
-                <li><Link href="#" className="hover:text-primary">Pricing</Link></li>
+                <li><Link href="#" className="hover:text-primary">{t('landing.footer.featuresLink')}</Link></li>
+                <li><Link href="#" className="hover:text-primary">{t('landing.footer.hardwareLink')}</Link></li>
+                <li><Link href="#" className="hover:text-primary">{t('landing.footer.pricingLink')}</Link></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold text-slate-900 mb-4">Company</h4>
+              <h4 className="font-semibold text-slate-900 mb-4">{t('landing.footer.company')}</h4>
               <ul className="space-y-2 text-sm text-slate-600">
-                <li><Link href="#" className="hover:text-primary">About Us</Link></li>
-                <li><Link href="#" className="hover:text-primary">Contact</Link></li>
-                <li><Link href="#" className="hover:text-primary">Privacy Policy</Link></li>
+                <li><Link href="#" className="hover:text-primary">{t('landing.footer.aboutUsLink')}</Link></li>
+                <li><Link href="#" className="hover:text-primary">{t('landing.footer.contactLink')}</Link></li>
+                <li><Link href="#" className="hover:text-primary">{t('landing.footer.privacyPolicyLink')}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold text-slate-900 mb-4">Connect</h4>
+              <h4 className="font-semibold text-slate-900 mb-4">{t('landing.footer.connect')}</h4>
               <ul className="space-y-2 text-sm text-slate-600">
-                <li><Link href="#" className="hover:text-primary">Twitter</Link></li>
-                <li><Link href="#" className="hover:text-primary">LinkedIn</Link></li>
-                <li><Link href="#" className="hover:text-primary">Instagram</Link></li>
+                <li><Link href="#" className="hover:text-primary">{t('landing.footer.twitter')}</Link></li>
+                <li><Link href="#" className="hover:text-primary">{t('landing.footer.linkedin')}</Link></li>
+                <li><Link href="#" className="hover:text-primary">{t('landing.footer.instagram')}</Link></li>
               </ul>
             </div>
           </div>
           
           <div className="pt-8 border-t flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-slate-500">
-            <p>© {new Date().getFullYear()} Dora Care. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} {t('landing.footer.copyright', { year: new Date().getFullYear() })}</p>
             <div className="flex gap-6">
-              <Link href="#" className="hover:text-slate-900">Terms</Link>
-              <Link href="#" className="hover:text-slate-900">Privacy</Link>
-              <Link href="#" className="hover:text-slate-900">Cookies</Link>
+              <Link href="#" className="hover:text-slate-900">{t('landing.footer.termsLink')}</Link>
+              <Link href="#" className="hover:text-slate-900">{t('landing.footer.privacyLink')}</Link>
+              <Link href="#" className="hover:text-slate-900">{t('landing.footer.cookiesLink')}</Link>
             </div>
           </div>
         </div>

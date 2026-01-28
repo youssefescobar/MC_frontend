@@ -95,6 +95,37 @@
       "groupManagementDesc": "Easily organize pilgrims into sub-groups and assign moderators for better supervision.",
       "dataSecurity": "Data Security",
       "dataSecurityDesc": "Enterprise-grade encryption ensures sensitive pilgrim data remains private and secure."
+    },
+    "v1Available": "v1.0 Now Available",
+    "stats": {
+      "pilgrimsSecured": "Pilgrims Secured",
+      "activeGroups": "Active Groups",
+      "uptime": "99.9% Uptime",
+      "countries": "Countries"
+    },
+    "cta": {
+      "title": "Ready to transform your Hajj operations?",
+      "subtitle": "Join hundreds of operators who trust Dora Care for their pilgrim safety and management needs.",
+      "contactSales": "Contact Sales"
+    },
+    "footer": {
+      "tagline": "Advanced safety solutions for Hajj & Umrah operators.",
+      "product": "Product",
+      "featuresLink": "Features",
+      "hardwareLink": "Hardware",
+      "pricingLink": "Pricing",
+      "company": "Company",
+      "aboutUsLink": "About Us",
+      "contactLink": "Contact",
+      "privacyPolicyLink": "Privacy Policy",
+      "connect": "Connect",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "instagram": "Instagram",
+      "copyright": "© {year} Dora Care. All rights reserved.",
+      "termsLink": "Terms",
+      "privacyLink": "Privacy",
+      "cookiesLink": "Cookies"
     }
   }
 }
