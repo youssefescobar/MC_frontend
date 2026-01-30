@@ -116,15 +116,29 @@ export default function BandDetailsPage() {
                 <p className="text-sm font-medium text-muted-foreground">{t('admin.imei')}</p>
                 <p className="font-mono text-lg">{band.imei}</p>
               </div>
-              {band.battery_percent !== undefined && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">{t('dashboard.battery')}</p>
-                  <div className="flex items-center gap-2">
-                    <Battery className="w-5 h-5 text-gray-600" />
-                    <p className="text-lg">{band.battery_percent}%</p>
-                  </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">{t('dashboard.battery') || 'Battery'}</p>
+                <div className="flex items-center gap-2">
+                  {band.battery_percent !== undefined && band.battery_percent !== null ? (
+                    <>
+                      <div className={`w-6 h-3 border rounded-sm relative ${band.battery_percent < 20 ? 'border-red-500' : 'border-green-500'}`}>
+                        <div
+                          className={`absolute left-0 top-0 bottom-0 ${band.battery_percent < 20 ? 'bg-red-500' : 'bg-green-500'}`}
+                          style={{ width: `${band.battery_percent}%` }}
+                        />
+                      </div>
+                      <p className={`text-lg ${band.battery_percent < 20 ? 'text-red-600 font-bold' : 'text-foreground'}`}>
+                        {band.battery_percent}%
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <Battery className="w-5 h-5 text-gray-400" />
+                      <p className="text-lg text-muted-foreground">--</p>
+                    </>
+                  )}
                 </div>
-              )}
+              </div>
               {band.last_updated && (
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">{t('dashboard.lastUpdated')}</p>

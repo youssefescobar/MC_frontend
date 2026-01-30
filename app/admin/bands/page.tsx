@@ -3,19 +3,21 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { 
-  Filter, 
-  MoreHorizontal, 
-  Plus, 
-  Trash2, 
+import {
+  Filter,
+  MoreHorizontal,
+  Plus,
+  Trash2,
   Loader2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Battery // Added Battery
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/lib/LanguageContext';
 import apiClient from '@/lib/api';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils'; // Added cn import
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -50,6 +52,7 @@ interface Band {
   serial_number: string;
   imei: string;
   status: 'active' | 'inactive' | 'maintenance';
+  battery_percent?: number; // Added optional property
   current_user_id?: {
     full_name: string;
     phone_number: string;
@@ -57,14 +60,14 @@ interface Band {
 }
 
 export default function BandsPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage(); // Added language
   const router = useRouter();
   const [bands, setBands] = useState<Band[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  
+
   // Register Band State
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [newBand, setNewBand] = useState({ serial_number: '', imei: '' });
@@ -80,7 +83,7 @@ export default function BandsPage() {
       if (statusFilter !== 'all') {
         params.status = statusFilter;
       }
-      
+
       const response = await apiClient.get('/hardware/bands', { params });
       if (response.data.success) {
         setBands(response.data.data);
@@ -172,21 +175,21 @@ export default function BandsPage() {
           <h1 className="text-3xl font-bold text-slate-900">{t('admin.bands')}</h1>
           <p className="text-muted-foreground">Manage hardware wristbands</p>
         </div>
-        
+
         <div className="flex items-center gap-2">
-           <div className="relative w-[180px]">
-             <select
-               className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
-               value={statusFilter}
-               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-             >
-               <option value="all">All Statuses</option>
-               <option value="active">Active</option>
-               <option value="inactive">Inactive</option>
-               <option value="maintenance">Maintenance</option>
-             </select>
-             <Filter className="absolute right-3 top-2.5 h-4 w-4 opacity-50 pointer-events-none" />
-           </div>
+          <div className="relative w-[180px]">
+            <select
+              className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
+              value={statusFilter}
+              onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+            >
+              <option value="all">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="maintenance">Maintenance</option>
+            </select>
+            <Filter className="absolute right-3 top-2.5 h-4 w-4 opacity-50 pointer-events-none" />
+          </div>
 
           <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
             <DialogTrigger asChild>
@@ -205,19 +208,19 @@ export default function BandsPage() {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="serial">Serial Number</Label>
-                  <Input 
-                    id="serial" 
+                  <Input
+                    id="serial"
                     value={newBand.serial_number}
-                    onChange={e => setNewBand({...newBand, serial_number: e.target.value})}
+                    onChange={e => setNewBand({ ...newBand, serial_number: e.target.value })}
                     placeholder="BAND-001"
                   />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="imei">{t('admin.imei')}</Label>
-                  <Input 
-                    id="imei" 
+                  <Input
+                    id="imei"
                     value={newBand.imei}
-                    onChange={e => setNewBand({...newBand, imei: e.target.value})}
+                    onChange={e => setNewBand({ ...newBand, imei: e.target.value })}
                     placeholder="358938070000000"
                   />
                 </div>
@@ -238,6 +241,7 @@ export default function BandsPage() {
             <TableRow>
               <TableHead>Serial Number</TableHead>
               <TableHead>{t('admin.imei')}</TableHead>
+              <TableHead>Battery</TableHead>
               <TableHead>Current User</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">{t('common.actions')}</TableHead>
@@ -246,13 +250,13 @@ export default function BandsPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell colSpan={6} className="h-24 text-center">
                   <Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" />
                 </TableCell>
               </TableRow>
             ) : bands.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                   No bands found
                 </TableCell>
               </TableRow>
@@ -269,20 +273,37 @@ export default function BandsPage() {
                   </TableCell>
                   <TableCell className="font-mono text-sm">{band.imei}</TableCell>
                   <TableCell>
+                    {band.battery_percent !== undefined ? (
+                      <div className="flex items-center gap-1">
+                        <Battery
+                          className={cn(
+                            'h-4 w-4',
+                            band.battery_percent > 50 && 'text-green-500',
+                            band.battery_percent <= 50 && band.battery_percent > 20 && 'text-orange-500',
+                            band.battery_percent <= 20 && 'text-red-500'
+                          )}
+                        />
+                        <span className="text-sm">{band.battery_percent}%</span>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground text-xs">{language === 'ar' ? 'غير متصل' : 'Not Connected'}</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
                     {band.current_user_id ? (
                       <div className="flex flex-col">
                         <span className="font-medium">{band.current_user_id.full_name}</span>
                         <span className="text-xs text-muted-foreground">{band.current_user_id.phone_number}</span>
                       </div>
                     ) : (
-                      <span className="text-muted-foreground italic">Unassigned</span>
+                      <span className="text-muted-foreground italic">{language === 'ar' ? 'غير مخصص' : 'Unassigned'}</span>
                     )}
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={
                       band.status === 'active' ? 'bg-green-100 text-green-700' :
-                      band.status === 'inactive' ? 'bg-red-100 text-red-700' :
-                      'bg-orange-100 text-orange-700'
+                        band.status === 'inactive' ? 'bg-red-100 text-red-700' :
+                          'bg-orange-100 text-orange-700'
                     }>
                       {band.status}
                     </Badge>
@@ -326,7 +347,7 @@ export default function BandsPage() {
             )}
           </TableBody>
         </Table>
-        
+
         <div className="flex items-center justify-end space-x-2 p-4">
           <Button
             variant="outline"

@@ -64,7 +64,9 @@ export default function GroupDetailsPage() {
     full_name: '',
     national_id: '',
     medical_history: '',
-    email: ''
+    email: '',
+    age: '',
+    gender: ''
   });
   const [registering, setRegistering] = useState(false);
   const [searchPilgrimTerm, setSearchPilgrimTerm] = useState('');
@@ -217,7 +219,7 @@ export default function GroupDetailsPage() {
       await addPilgrimToGroup(pilgrimId);
 
       setIsRegDialogOpen(false);
-      setNewPilgrim({ full_name: '', national_id: '', medical_history: '', email: '' });
+      setNewPilgrim({ full_name: '', national_id: '', medical_history: '', email: '', age: '', gender: '' });
     } catch (error: any) {
       toast.error(error.response?.data?.errors?.[0] || error.response?.data?.error || t('common.error'));
     } finally {
@@ -420,7 +422,7 @@ export default function GroupDetailsPage() {
                   if (!open) {
                     // Reset states when dialog closes
                     setCurrentPilgrimDialogTab('register');
-                    setNewPilgrim({ full_name: '', national_id: '', medical_history: '', email: '' });
+                    setNewPilgrim({ full_name: '', national_id: '', medical_history: '', email: '', age: '', gender: '' });
                     setSearchPilgrimTerm('');
                     setFoundPilgrims([]);
                   }
@@ -476,6 +478,30 @@ export default function GroupDetailsPage() {
                             value={newPilgrim.national_id}
                             onChange={e => setNewPilgrim({ ...newPilgrim, national_id: e.target.value })}
                           />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="grid gap-2">
+                            <Label htmlFor="age_reg">{language === 'ar' ? 'العمر' : 'Age'}</Label>
+                            <Input
+                              id="age_reg"
+                              type="number"
+                              value={newPilgrim.age || ''}
+                              onChange={e => setNewPilgrim({ ...newPilgrim, age: e.target.value })}
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="gender_reg">{language === 'ar' ? 'الجنس' : 'Gender'}</Label>
+                            <select
+                              id="gender_reg"
+                              className="flex h-9 w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                              value={newPilgrim.gender || ''}
+                              onChange={e => setNewPilgrim({ ...newPilgrim, gender: e.target.value })}
+                            >
+                              <option value="">{language === 'ar' ? 'اختر...' : 'Select...'}</option>
+                              <option value="male">{language === 'ar' ? 'ذكر' : 'Male'}</option>
+                              <option value="female">{language === 'ar' ? 'أنثى' : 'Female'}</option>
+                            </select>
+                          </div>
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="medical_reg">{language === 'ar' ? 'التاريخ الطبي' : 'Medical History'}</Label>
@@ -585,6 +611,15 @@ export default function GroupDetailsPage() {
                               <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100">
                                 {pilgrim.band_info.serial_number}
                               </Badge>
+                              {pilgrim.band_info.battery_percent !== undefined && pilgrim.band_info.battery_percent !== null ? (
+                                <Badge variant="outline" className={`text-xs ${pilgrim.band_info.battery_percent < 20 ? 'text-red-500 border-red-200' : 'text-slate-500'}`}>
+                                  {pilgrim.band_info.battery_percent}%
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-xs text-slate-400">
+                                  {language === 'ar' ? '--' : '--'}
+                                </Badge>
+                              )}
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -718,7 +753,7 @@ export default function GroupDetailsPage() {
                 <option value="">{language === 'ar' ? 'اختر سوار...' : 'Select a band...'}</option>
                 {availableBands.map((band) => (
                   <option key={band._id} value={band.serial_number}>
-                    {band.serial_number} (IMEI: {band.imei})
+                    {band.serial_number} (IMEI: {band.imei}) {band.battery_percent !== undefined ? `- 🔋 ${band.battery_percent}%` : ''}
                   </option>
                 ))}
               </select>

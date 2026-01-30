@@ -152,10 +152,21 @@ export default function GroupsPage() {
     }
   };
 
+  const [search, setSearch] = useState('');
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1); // Reset to page 1 on search
+      fetchGroups();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const fetchGroups = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/admin/groups', { params: { page, limit: 12 } });
+      const response = await apiClient.get('/admin/groups', { params: { page, limit: 12, search } });
       if (response.data.success) {
         setGroups(response.data.data);
         setTotalPages(response.data.pagination.pages);
@@ -165,11 +176,9 @@ export default function GroupsPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, t]);
+  }, [page, search, t]);
 
-  useEffect(() => {
-    fetchGroups();
-  }, [fetchGroups]);
+  // ... (rest of useEffects)
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -193,11 +202,24 @@ export default function GroupsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">{t('admin.groups')}</h1>
           <p className="text-muted-foreground">Manage all Hajj groups</p>
         </div>
+        <div className="relative w-full sm:w-64">
+          {/* Search Input handled below */}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 mb-4">
+        <input
+          type="text"
+          placeholder="Search groups..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        />
       </div>
 
       {loading ? (
@@ -206,7 +228,7 @@ export default function GroupsPage() {
         </div>
       ) : groups.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-xl border border-dashed">
-          <p className="text-muted-foreground">No groups found</p>
+          <p className="text-muted-foreground">{search ? 'No groups found matching your search' : 'No groups found'}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -244,7 +266,7 @@ export default function GroupsPage() {
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="w-4 h-4" />
                   <span>
-                    {new Date(group.created_at).toLocaleDateString()}
+                    {group.created_at ? new Date(group.created_at).toLocaleDateString() : 'N/A'}
                   </span>
                 </div>
               </CardContent>
@@ -318,7 +340,14 @@ export default function GroupsPage() {
                         className="w-4 h-4"
                       />
                       <div>
-                        <p className="font-medium">{band.serial_number}</p>
+                        <p className="font-medium flex items-center gap-2">
+                          {band.serial_number}
+                          {band.battery_percent !== undefined && band.battery_percent !== null && (
+                            <span className={`text-xs px-1.5 py-0.5 rounded border ${band.battery_percent < 20 ? 'bg-red-50 border-red-200 text-red-600' : 'bg-green-50 border-green-200 text-green-600'}`}>
+                              {band.battery_percent}%
+                            </span>
+                          )}
+                        </p>
                         <p className="text-sm text-muted-foreground">IMEI: {band.imei}</p>
                       </div>
                     </label>

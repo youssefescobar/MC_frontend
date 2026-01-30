@@ -6,12 +6,18 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
 // Fix for default icon issues with Leaflet in Webpack environments
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: '/marker-icon-2x.png',
-  iconUrl: '/marker-icon.png',
-  shadowUrl: '/marker-shadow.png',
-});
+const fixLeafletIcon = () => {
+  try {
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: '/marker-icon-2x.png',
+      iconUrl: '/marker-icon.png',
+      shadowUrl: '/marker-shadow.png',
+    });
+  } catch (e) {
+    console.error('Leaflet icon fix failed', e);
+  }
+};
 
 interface MapComponentProps {
   latitude?: number;
@@ -26,7 +32,9 @@ function RecenterAutomatically({ lat, lng, markers }: { lat?: number; lng?: numb
   React.useEffect(() => {
     if (markers && markers.length > 0) {
       const bounds = L.latLngBounds(markers.map(m => [m.lat, m.lng]));
-      map.fitBounds(bounds, { padding: [50, 50] });
+      if (bounds.isValid()) {
+        map.fitBounds(bounds, { padding: [50, 50] });
+      }
     } else if (lat && lng) {
       map.setView([lat, lng]);
     }
@@ -36,6 +44,10 @@ function RecenterAutomatically({ lat, lng, markers }: { lat?: number; lng?: numb
 }
 
 export function MapComponent({ latitude, longitude, popupText = 'Last Known Location', markers = [] }: MapComponentProps) {
+  React.useEffect(() => {
+    fixLeafletIcon();
+  }, []);
+
   // Default to Mecca if no data provided
   const defaultPos: [number, number] = [21.4225, 39.8262];
 
@@ -47,11 +59,11 @@ export function MapComponent({ latitude, longitude, popupText = 'Last Known Loca
 
   return (
     <MapContainer center={center} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
-      <RecenterAutomatically lat={latitude} lng={longitude} markers={markers} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <RecenterAutomatically lat={latitude} lng={longitude} markers={markers} />
 
       {/* Render single marker if lat/lng provided */}
       {latitude && longitude && (

@@ -121,8 +121,28 @@ export default function PilgrimDetailsPage() {
               </Badge>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{language === 'ar' ? 'العمر' : 'Age'}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{pilgrim.age || (language === 'ar' ? 'غير معروف' : 'N/A')}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{language === 'ar' ? 'الجنس' : 'Gender'}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold capitalize">
+                    {pilgrim.gender === 'male' ? (language === 'ar' ? 'ذكر' : 'Male') :
+                      pilgrim.gender === 'female' ? (language === 'ar' ? 'أنثى' : 'Female') :
+                        (language === 'ar' ? 'غير محدد' : 'N/A')}
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="col-span-1 md:col-span-2">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">{language === 'ar' ? 'رقم الهوية' : 'National ID'}</CardTitle>
                 </CardHeader>
@@ -133,7 +153,9 @@ export default function PilgrimDetailsPage() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">{t('common.email')}</CardTitle>
@@ -146,7 +168,7 @@ export default function PilgrimDetailsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="md:col-span-2">
+              <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.medicalHistory')}</CardTitle>
                 </CardHeader>
@@ -180,10 +202,21 @@ export default function PilgrimDetailsPage() {
                       {pilgrim.band_info.last_updated ? new Date(pilgrim.band_info.last_updated).toLocaleString() : 'N/A'}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center justify-between py-2 border-b">
                     <span className="text-muted-foreground">{language === 'ar' ? 'IMEI' : 'IMEI'}</span>
                     <span className="font-mono text-sm">{pilgrim.band_info.imei || 'N/A'}</span>
                   </div>
+                  {pilgrim.band_info.battery_percent !== undefined && (
+                    <div className="flex items-center justify-between py-2 border-b">
+                      <span className="text-muted-foreground">{language === 'ar' ? 'البطارية' : 'Battery'}</span>
+                      <div className="flex items-center gap-2">
+                        <Battery className={`w-4 h-4 ${pilgrim.band_info.battery_percent < 20 ? 'text-red-500' : 'text-green-500'}`} />
+                        <span className={`font-medium ${pilgrim.band_info.battery_percent < 20 ? 'text-red-500' : 'text-green-600'}`}>
+                          {pilgrim.band_info.battery_percent}%
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
